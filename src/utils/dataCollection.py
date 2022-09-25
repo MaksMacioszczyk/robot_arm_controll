@@ -1,4 +1,3 @@
-from genericpath import isdir
 import cv2
 from cvzone.HandTrackingModule import HandDetector
 import numpy as np
@@ -7,13 +6,12 @@ import time
 import os
  
 cap = cv2.VideoCapture(0)
-# cap.open("http://192.168.0.19:8000/")
+cap.open("http://192.168.0.19:8080/")
 detector = HandDetector(maxHands=1)
  
 offset = 20
 imgSize = 300
-
-folder = os.getcwd() + r'\src\utils\ROCKNROLL'
+folder = os.getcwd() + "/robot_arm_controll/src/utils/REVOLVER"
 print(folder)
 counter = 0
  

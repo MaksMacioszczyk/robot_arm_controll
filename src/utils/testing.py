@@ -4,18 +4,23 @@ from cvzone.HandTrackingModule import HandDetector
 from cvzone.ClassificationModule import Classifier
 import numpy as np
 import math
+import os
 
-cap = cv2.VideoCapture(0)
-# cap.open("http://192.168.0.19:8000/")
-detector = HandDetector(maxHands=1)
-classifier = Classifier(r"C:\Users\Marcin\Desktop\git_test2\Testowe1\robot_arm_controll\src\Model\keras_model.h5", r"C:\Users\Marcin\Desktop\git_test2\Testowe1\robot_arm_controll\src\Model\labels.txt")
+cap = cv2.VideoCapture()
+cap.open("http://192.168.0.19:8080/")
+
+abs_path = os.getcwd()
+
+classifier = Classifier(abs_path + "/robot_arm_controll/src/Model/keras_model.h5", abs_path + "/robot_arm_controll/src/Model/labels.txt")
+positions_file = abs_path + "/robot_arm_controll/src/utils/positions.txt"
 
 offset = 20
 imgSize = 300
 
-positions_file = r"C:\Users\Marcin\Desktop\git_test2\Testowe1\robot_arm_controll\src\utils\positions.txt"
 
-labels = ["IDLE", "NOPEACE", "PEACE", "POINTER", "REVOLVER", "ROCK", "ROCKNROLL"]
+
+detector = HandDetector(maxHands=1)
+labels = ["IDLE", "SAVE", "TOGGLE_FOLLOW", "TOGGLE_GRIP"]
 
 while True:
     success, img = cap.read()
@@ -35,22 +40,26 @@ while True:
         if aspectRatio > 1:
             k = imgSize / h
             wCal = math.ceil(k * w)
-            imgResize = cv2.resize(imgCrop, (wCal, imgSize))
-            imgResizeShape = imgResize.shape
-            wGap = math.ceil((imgSize - wCal) / 2)
-            imgWhite[:, wGap:wCal + wGap] = imgResize
-            prediction, index = classifier.getPrediction(imgWhite, draw=False)
-            print(prediction, index)
+            try:
+                imgResize = cv2.resize(imgCrop, (wCal, imgSize))
+                imgResizeShape = imgResize.shape
+                wGap = math.ceil((imgSize - wCal) / 2)
+                imgWhite[:, wGap:wCal + wGap] = imgResize
+                prediction, index = classifier.getPrediction(imgWhite, draw=False)
+            except Exception as err:
+                print(err)    
 
         else:
             k = imgSize / w
             hCal = math.ceil(k * h)
-            imgResize = cv2.resize(imgCrop, (imgSize, hCal))
-            imgResizeShape = imgResize.shape
-            hGap = math.ceil((imgSize - hCal) / 2)
-            imgWhite[hGap:hCal + hGap, :] = imgResize
-            prediction, index = classifier.getPrediction(imgWhite, draw=False)
-
+            try:
+                imgResize = cv2.resize(imgCrop, (imgSize, hCal))
+                imgResizeShape = imgResize.shape
+                hGap = math.ceil((imgSize - hCal) / 2)
+                imgWhite[hGap:hCal + hGap, :] = imgResize
+                prediction, index = classifier.getPrediction(imgWhite, draw=False)
+            except Exception as err:
+                print(err)
         if labels[index] == labels[0]:
             with open(positions_file, "a") as file:
                 file.write(str(hand['center']) + "\n")
