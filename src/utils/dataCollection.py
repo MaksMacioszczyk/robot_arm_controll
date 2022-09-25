@@ -6,14 +6,15 @@ import math
 import time
 import os
  
-cap = cv2.VideoCapture()
-cap.open("http://192.168.0.19:8000/")
+cap = cv2.VideoCapture(0)
+# cap.open("http://192.168.0.19:8000/")
 detector = HandDetector(maxHands=1)
  
 offset = 20
 imgSize = 300
 
-folder = os.path.abspath() + "/data"
+folder = os.getcwd() + r'\src\utils\ROCKNROLL'
+print(folder)
 counter = 0
  
 while True:

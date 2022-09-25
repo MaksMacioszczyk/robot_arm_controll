@@ -5,7 +5,7 @@ import numpy as np
 import math
 
 cap = cv2.VideoCapture(0)
-cap.open("http://192.168.0.19:8000/")
+# cap.open("http://192.168.0.19:8000/")
 detector = HandDetector(detectionCon=0.8, maxHands=1)
 
 isGesture = False

@@ -5,17 +5,17 @@ from cvzone.ClassificationModule import Classifier
 import numpy as np
 import math
 
-cap = cv2.VideoCapture()
-cap.open("http://192.168.0.19:8000/")
+cap = cv2.VideoCapture(0)
+# cap.open("http://192.168.0.19:8000/")
 detector = HandDetector(maxHands=1)
-classifier = Classifier("/home/wsl-ubuntu/robot_arm_controll/Model/keras_model.h5", "/home/wsl-ubuntu/robot_arm_controll/Model/labels.txt")
+classifier = Classifier(r"C:\Users\Marcin\Desktop\git_test2\Testowe1\robot_arm_controll\src\Model\keras_model.h5", r"C:\Users\Marcin\Desktop\git_test2\Testowe1\robot_arm_controll\src\Model\labels.txt")
 
 offset = 20
 imgSize = 300
 
-positions_file = "/home/wsl-ubuntu/robot_arm_controll/positions.txt"
+positions_file = r"C:\Users\Marcin\Desktop\git_test2\Testowe1\robot_arm_controll\src\utils\positions.txt"
 
-labels = ["Zapisz", "Wskaznik", "Otworz", "Zamknij", ""]
+labels = ["IDLE", "NOPEACE", "PEACE", "POINTER", "REVOLVER", "ROCK", "ROCKNROLL"]
 
 while True:
     success, img = cap.read()
