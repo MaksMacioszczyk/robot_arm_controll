@@ -3,11 +3,19 @@ import cvzone
 import cv2
 import numpy as np
 import math
+import serial
+
+ser = serial.Serial()
+ser.baudrate = 9600
+ser.port = 'COM4'
+ser.timeout = 1
 
 cap = cv2.VideoCapture(0)
-# cap.open("http://192.168.0.19:8000/")
-detector = HandDetector(detectionCon=0.8, maxHands=1)
 
+detector = HandDetector(detectionCon=0.8, maxHands=1)
+ser.open()
+isOn = False
+ser.write(b'off')
 isGesture = False
 mariginError = 50
 
@@ -32,11 +40,6 @@ while True:
         centerPoint1 = hand1['center']  # center of the hand cx,cy
         handType1 = hand1["type"]  # Handtype Left or Right
         fingers1 = detector.fingersUp(hand1)
-          
-        if lmList1[8][0] - lmList1[4][0] <= mariginError and lmList1[8][1] - lmList1[4][1] <= mariginError and lmList1[8][2] - lmList1[4][2] <= mariginError:
-            isGesture = True
-        else:
-            isGesture = False
             
         lmList = hands[0]['lmList']
         x, y, w, h = hands[0]['bbox']
@@ -50,16 +53,25 @@ while True:
         fingers = detector.fingersUp(hands[0])
         if fingers == [1, 1, 1, 1, 1]:
             cvzone.putTextRect(img, f'{int(distanceCM)} cm X:{int(centerPoint1[0])} Y:{int(centerPoint1[1])}', (x+5, y-10), border=2)
+            isGesture = False
         elif fingers == [1,1,0,1,1]:
-            cvzone.putTextRect(img, f'{int(distanceCM)} cm X:{int(centerPoint1[0])} Y:{int(centerPoint1[1])}', (x+5, y-10))
-                
-        # if not isGesture:
-        #     cvzone.putTextRect(img, f'{int(distanceCM)} cm X:{int(centerPoint1[0])} Y:{int(centerPoint1[1])}', (x+5, y-10), border=2)
-        # else:
-        #     cvzone.putTextRect(img, f'{int(distanceCM)} cm X:{int(centerPoint1[0])} Y:{int(centerPoint1[1])}', (x+5, y-10))
-        
+            cvzone.putTextRect(img, f'{int(distanceCM)} cm X:{int(centerPoint1[0])} Y:{int(centerPoint1[1])}', (x+5, y-10), border=3)
+            
+            if not isGesture:
+                isGesture = True
+                if isOn:
+                    send_to_Arduino = b"off"
+                    isOn = False
+                else:
+                    send_to_Arduino = b"on"
+                    isOn = True
+                ser.write(send_to_Arduino)
+
+    
+           
     # Display
     cv2.imshow("Image", img)
     cv2.waitKey(1)
+
 cap.release()
 cv2.destroyAllWindows()
