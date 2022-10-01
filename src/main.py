@@ -5,22 +5,29 @@ import cv2
 import numpy as np
 import math
 import serial
-import keyboard
+
 
 
 ##Serial Port Init##
 ser = serial.Serial()
 ser.baudrate = 9600
-ser.port = '/dev/ttyS3'
+ser.port = '/dev/ttyACM0'   #DON'T  CHANGE
 ser.timeout = 1
-ser.open()
+try:
+    ser.open()
+except:
+    ser.port = 'COM3'   #CHANGE HERE
+    ser.open()
 ser.write(b'off')
 
 ##Camera init##
 camera = cv2.VideoCapture(0)
 if not camera.isOpened():
     camera.open("http://192.168.0.20:8080")
-
+if not camera.isOpened():
+    camera.open("http://192.168.0.25:8080")
+if not camera.isOpened():
+    raise "Please connect camera"
 camera_width = camera.get(cv2.CAP_PROP_FRAME_WIDTH)
 camera_height =  camera.get(cv2.CAP_PROP_FRAME_HEIGHT)
 camera_suspension_height = 50
