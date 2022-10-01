@@ -45,7 +45,25 @@ coff = np.polyfit(x, y, 2)  # y = Ax^2 + Bx + C
 detector = HandDetector(detectionCon=0.8, maxHands=1)
 
 
-####MAIN LOOP####
+
+def count_and_send_postion():
+    #Counting robot X Y Z based on camera output#
+        robot_X = lmList[8][0]/camera_width * robot_max_range_CM[0]
+        robot_Y = (1 - lmList[8][1]/camera_height) * robot_max_range_CM[1]
+        robot_Z = (1 - distanceCM/camera_suspension_height) * robot_max_range_CM[2]
+        #################
+
+        #Inverse kinematics#
+        M = (robot_X**2 + robot_Y**2 - robot_arm_lengths[0]**2 - robot_arm_lengths[1]**2)/(2*robot_arm_lengths[0]*robot_arm_lengths[1])
+        fi2 = np.arctan((-np.sqrt(1-M**2))/(M))
+        fi1 = np.arctan(robot_Y/robot_X)-np.arctan((robot_max_range_CM[1]*np.sin(fi2))/(robot_max_range_CM[0]+robot_max_range_CM[1] * np.cos(fi2)))
+         
+        fi1_deg = np.rad2deg(fi1)
+        fi2_deg = np.rad2deg(fi2)
+        ###################
+        #print(f'FI1:{fi1_deg} FI2:{fi2_deg} Z:{robot_Z}\n') # Print angles #          
+        
+        ####MAIN LOOP####
 while True:
     success, img = camera.read()
     hands = detector.findHands(img, draw=False)  
@@ -70,10 +88,10 @@ while True:
         #Gestures recognition#
         fingers = detector.fingersUp(hands[0])
         if fingers == [1, 1, 1, 1, 1]:
-            cvzone.putTextRect(img, f'{int(distanceCM)} cm X:{int(lmList[8][0])} Y:{int(lmList[8][1])}', (x+5, y-10), border=2)
+            cvzone.putTextRect(img, f'{int(distanceCM)} cm X:{int(lmList[8][0])} Y:{int(camera_height - lmList[8][1])}', (x+5, y-10), border=2)
             isGesture = False
         elif fingers == [1,1,0,1,1]:
-            cvzone.putTextRect(img, f'{int(distanceCM)} cm X:{int(lmList[8][0])} Y:{int(lmList[8][1])}', (x+5, y-10), border=3)
+            cvzone.putTextRect(img, f'{int(distanceCM)} cm X:{int(lmList[8][0])} Y:{int(camera_height - lmList[8][1])}', (x+5, y-10), border=3)
             if not isGesture:
                 isGesture = True
                 if isOn:
@@ -83,25 +101,16 @@ while True:
                     send_to_Arduino = b"on"
                     isOn = True
                 ser.write(send_to_Arduino)
+        elif fingers == [0,1,0,0,0]:
+            #cvzone.putTextRect(img, f'{int(distanceCM)} cm X:{int(lmList[8][0])} Y:{int(camera_height - lmList[8][1])}', (x+5, y), border=3)
+            cv2.circle(img, (lmList[8][0],lmList[8][1]), 10, (0,0,255),10)
+            count_and_send_postion()
         elif fingers == [0,0,1,0,0]:
             break
         ##########################        
         
-        #Counting robot X Y Z based on camera output#
-        robot_X = lmList[8][0]/camera_width * robot_max_range_CM[0]
-        robot_Y = (1 -lmList[8][1]/camera_height) * robot_max_range_CM[1]
-        robot_Z = (1 - distanceCM/camera_suspension_height) * robot_max_range_CM[2]
-        #################
-
-        #Inverse kinematics#
-        M = (robot_X**2 + robot_Y**2 - robot_arm_lengths[0]**2 - robot_arm_lengths[1]**2)/(2*robot_arm_lengths[0]*robot_arm_lengths[1])
-        fi2 = np.arctan((-np.sqrt(1-M**2))/(M))
-        fi1 = np.arctan(robot_Y/robot_X)-np.arctan((robot_max_range_CM[1]*np.sin(fi2))/(robot_max_range_CM[0]+robot_max_range_CM[1] * np.cos(fi2)))
-         
-        fi1_deg = np.rad2deg(fi1)
-        fi2_deg = np.rad2deg(fi2)
-        ###################
-        #print(f'FI1:{fi1_deg} FI2:{fi2_deg} Z:{robot_Z}\n') # Print angles #          
+        
     
     cv2.imshow("Image", img)
     cv2.waitKey(1)
+    
