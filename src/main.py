@@ -5,18 +5,22 @@ import cv2
 import numpy as np
 import math
 import serial
+import keyboard
 
 
 ##Serial Port Init##
 ser = serial.Serial()
 ser.baudrate = 9600
-ser.port = 'COM4'
+ser.port = '/dev/ttyS3'
 ser.timeout = 1
 ser.open()
 ser.write(b'off')
 
 ##Camera init##
 camera = cv2.VideoCapture(0)
+if not camera.isOpened():
+    camera.open("http://192.168.0.20:8080")
+
 camera_width = camera.get(cv2.CAP_PROP_FRAME_WIDTH)
 camera_height =  camera.get(cv2.CAP_PROP_FRAME_HEIGHT)
 camera_suspension_height = 50
@@ -72,6 +76,8 @@ while True:
                     send_to_Arduino = b"on"
                     isOn = True
                 ser.write(send_to_Arduino)
+        elif fingers == [0,0,1,0,0]:
+            break
         ##########################        
         
         #Counting robot X Y Z based on camera output#
@@ -88,7 +94,7 @@ while True:
         fi1_deg = np.rad2deg(fi1)
         fi2_deg = np.rad2deg(fi2)
         ###################
-        print(f'FI1:{fi1_deg} FI2:{fi2_deg} Z:{robot_Z}\n') # Print angles #          
+        #print(f'FI1:{fi1_deg} FI2:{fi2_deg} Z:{robot_Z}\n') # Print angles #          
     
     cv2.imshow("Image", img)
     cv2.waitKey(1)
