@@ -2,8 +2,6 @@ from PySide6.QtCore import *
 from PySide6.QtGui import *
 from PySide6.QtUiTools import *
 from PySide6.QtWidgets import *
-import cv2 
-import qimage2ndarray
 import sys 
 import ui.dependencies as dependencies
 

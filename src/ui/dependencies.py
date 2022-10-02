@@ -4,6 +4,7 @@ import cv2
 import numpy as np
 import math
 import serial
+import os 
 
 
 ##Serial Port Init##
@@ -36,7 +37,10 @@ camera_suspension_height = 50
 robot_max_range_CM = [10,10,10] # [X, Y, Z]
 robot_arm_lengths = [20,15,10] # [A1, A2, A3]
 isOn = False
-isGesture = False
+is_gesture_grip = False
+is_gesture_position = False
+positions_file = os.getcwd() + "/ui/positions.txt"
+last_pos = (0,0,0,0,0)
 
 ##Distance shenanigans##
 x = [300, 245, 200, 170, 145, 130, 112, 103, 93, 87, 80, 75, 70, 67, 62, 59, 57]
@@ -56,20 +60,36 @@ def loop():
             cv2.imshow("Image", img)
             cv2.waitKey(1)
             ###############
-    
+
+#Save current position to file#
+def save_postion(fi1,fi2,X,Y,Z):
+    if X == 0 and Y == 0 and Z == 0:
+        return
+    pos = [str(fi1) + '\n', str(fi2) + '\n',str(X) + '\n', str(Y) + '\n', str(Z) + '\n']
+    print(pos)
+    with open(positions_file, "a") as file:
+        file.writelines(pos)
+        
+#Get postitions from file#
+def get_positions():
+    with open(positions_file, "r") as file:
+        data = list()
+        for line in file:
+            data.append(float(line))
+    return data
+ 
 #One frame#
 def get_frame():
-    global isGesture, isOn
-    success, img = camera.read()
+    global is_gesture_grip, is_gesture_position, last_pos, isOn
+    _, img = camera.read()
     hands = detector.findHands(img, draw=False)  
 
     if hands:
         ##Reading from mediapipe output##
         hand1 = hands[0]
-        lmList = hand1["lmList"] 
-        bbox1 = hand1["bbox"]   
+        lmList = hand1["lmList"]   
         lmList = hands[0]['lmList']
-        x, y, w, h = hands[0]['bbox']
+        x, y, _, _ = hands[0]['bbox']
         x1, y1, _ = lmList[5]
         x2, y2, _ = lmList[17]
         #####################
@@ -84,11 +104,12 @@ def get_frame():
         fingers = detector.fingersUp(hands[0])
         if fingers == [1, 1, 1, 1, 1]:
             cvzone.putTextRect(img, f'{int(distanceCM)} cm X:{int(lmList[8][0])} Y:{int(camera_height - lmList[8][1])}', (x+5, y-10), border=2)
-            isGesture = False
+            is_gesture_grip = False
+            is_gesture_position = False
         elif fingers == [1,1,0,1,1]:
             cvzone.putTextRect(img, f'{int(distanceCM)} cm X:{int(lmList[8][0])} Y:{int(camera_height - lmList[8][1])}', (x+5, y-10), border=3)
-            if not isGesture:
-                isGesture = True
+            if not is_gesture_grip:
+                is_gesture_grip = True
                 if isOn:
                     send_to_Arduino = b"off"
                     isOn = False
@@ -99,7 +120,12 @@ def get_frame():
         elif fingers == [0,1,0,0,0]:
             #cvzone.putTextRect(img, f'{int(distanceCM)} cm X:{int(lmList[8][0])} Y:{int(camera_height - lmList[8][1])}', (x+5, y), border=3)
             cv2.circle(img, (lmList[8][0],lmList[8][1]), 10, (0,0,255),10)
-            calculate_kinematics(lmList, distanceCM)
+            last_pos = calculate_kinematics(lmList, distanceCM)
+            is_gesture_position = False
+        elif fingers == [0,1,1,0,0]:
+            if not is_gesture_position:
+                is_gesture_position = True
+                save_postion(last_pos[0],last_pos[1],last_pos[2],last_pos[3],last_pos[4])
         elif fingers == [0,0,1,0,0]:
             return False
         ##########################     
@@ -125,6 +151,6 @@ def calculate_kinematics(lmList,distanceCM):
         ###################
         
         #print(f'FI1:{fi1_deg} FI2:{fi2_deg} Z:{robot_Z}\n') # Print angles #          
-        return (fi1_deg,fi2_deg,robot_Z)
+        return (fi1_deg,fi2_deg,robot_X, robot_Y, robot_Z)
      
         
