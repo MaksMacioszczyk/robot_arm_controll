@@ -3,7 +3,7 @@ from PySide6.QtGui import *
 from PySide6.QtUiTools import *
 from PySide6.QtWidgets import *
 import sys 
-import ui.dependencies as dependencies
+import utils.postition_calculating as postition_calculating
 
 app = QApplication([])
 window = QWidget()
@@ -14,7 +14,7 @@ button.clicked.connect(sys.exit)
 
 #Camera button#
 button_camera = QPushButton("Włącz kamere")
-button_camera.clicked.connect(dependencies.loop) 
+button_camera.clicked.connect(postition_calculating.loop) 
 
 #Layout setup#
 layout = QVBoxLayout()

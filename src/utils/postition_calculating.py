@@ -3,21 +3,8 @@ import cvzone
 import cv2
 import numpy as np
 import math
-import serial
 import os 
-
-
-##Serial Port Init##
-ser = serial.Serial()
-ser.baudrate = 9600
-ser.port = '/dev/ttyACM0'   #DON'T  CHANGE
-ser.timeout = 1
-try:
-    ser.open()
-except:
-    ser.port = 'COM3'   #CHANGE HERE
-    ser.open()
-ser.write(b'off')
+import utils.communication as comm
 
 ##Camera init##
 camera = cv2.VideoCapture(0)
@@ -30,7 +17,7 @@ if not camera.isOpened():
 
 ##Get camera variables##
 camera_width = camera.get(cv2.CAP_PROP_FRAME_WIDTH)
-camera_height =  camera.get(cv2.CAP_PROP_FRAME_HEIGHT)
+camera_height = camera.get(cv2.CAP_PROP_FRAME_HEIGHT)
 camera_suspension_height = 50
 
 ##Variables##
@@ -39,7 +26,7 @@ robot_arm_lengths = [20,15,10] # [A1, A2, A3]
 isOn = False
 is_gesture_grip = False
 is_gesture_position = False
-positions_file = os.getcwd() + "/ui/positions.txt"
+positions_file = os.getcwd() + "/utils/positions.txt"
 last_pos = (0,0,0,0,0)
 
 ##Distance shenanigans##
@@ -110,17 +97,13 @@ def get_frame():
             cvzone.putTextRect(img, f'{int(distanceCM)} cm X:{int(lmList[8][0])} Y:{int(camera_height - lmList[8][1])}', (x+5, y-10), border=3)
             if not is_gesture_grip:
                 is_gesture_grip = True
-                if isOn:
-                    send_to_Arduino = b"off"
-                    isOn = False
-                else:
-                    send_to_Arduino = b"on"
-                    isOn = True
-                ser.write(send_to_Arduino)
+                
         elif fingers == [0,1,0,0,0]:
             #cvzone.putTextRect(img, f'{int(distanceCM)} cm X:{int(lmList[8][0])} Y:{int(camera_height - lmList[8][1])}', (x+5, y), border=3)
             cv2.circle(img, (lmList[8][0],lmList[8][1]), 10, (0,0,255),10)
             last_pos = calculate_kinematics(lmList, distanceCM)
+            comm.send_fi_to_Arduino(last_pos[0], 2)
+            comm.send_fi_to_Arduino(last_pos[1], 3)
             is_gesture_position = False
         elif fingers == [0,1,1,0,0]:
             if not is_gesture_position:
