@@ -5,6 +5,7 @@ import numpy as np
 import math
 import os 
 import utils.communication as comm
+import time
 
 ##Camera init##
 camera = cv2.VideoCapture(0)
@@ -23,11 +24,12 @@ camera_suspension_height = 50
 ##Variables##
 robot_max_range_CM = [10,10,10] # [X, Y, Z]
 robot_arm_lengths = [20,15,10] # [A1, A2, A3]
-isOn = False
 is_gesture_grip = False
 is_gesture_position = False
-positions_file = os.getcwd() + "/utils/positions.txt"
+positions_file = os.getcwd() + "/src/utils/positions.txt"
 last_pos = (0,0,0,0,0)
+counted_frame_to_send = 0
+how_many_messages_send = 5
 
 ##Distance shenanigans##
 x = [300, 245, 200, 170, 145, 130, 112, 103, 93, 87, 80, 75, 70, 67, 62, 59, 57]
@@ -47,6 +49,7 @@ def loop():
             cv2.imshow("Image", img)
             cv2.waitKey(1)
             ###############
+        
 
 #Save current position to file#
 def save_postion(fi1,fi2,X,Y,Z):
@@ -67,7 +70,7 @@ def get_positions():
  
 #One frame#
 def get_frame():
-    global is_gesture_grip, is_gesture_position, last_pos, isOn
+    global is_gesture_grip, is_gesture_position, last_pos, counted_frame_to_send, how_many_messages_send
     _, img = camera.read()
     hands = detector.findHands(img, draw=False)  
 
@@ -102,8 +105,13 @@ def get_frame():
             #cvzone.putTextRect(img, f'{int(distanceCM)} cm X:{int(lmList[8][0])} Y:{int(camera_height - lmList[8][1])}', (x+5, y), border=3)
             cv2.circle(img, (lmList[8][0],lmList[8][1]), 10, (0,0,255),10)
             last_pos = calculate_kinematics(lmList, distanceCM)
-            comm.send_fi_to_Arduino(last_pos[0], 2)
-            comm.send_fi_to_Arduino(last_pos[1], 3)
+            print(counted_frame_to_send)
+            if counted_frame_to_send == how_many_messages_send:
+                comm.send_fi_to_Arduino(last_pos[0], 2)
+                comm.send_fi_to_Arduino(last_pos[1], 3)
+                counted_frame_to_send = 0
+            else:
+                counted_frame_to_send += 1
             is_gesture_position = False
         elif fingers == [0,1,1,0,0]:
             if not is_gesture_position:

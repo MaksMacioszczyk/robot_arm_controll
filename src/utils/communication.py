@@ -16,6 +16,9 @@ def send_to_Arduino(data_to_send):
     ser.write(data_to_send)
     
 def send_fi_to_Arduino(data, arm_num):
-    data = int(data)
-    data_to_send = str(arm_num) + str(data) + '\n'
-    send_to_Arduino(data_to_send.encode())
+    try:
+        data = int(data)
+        data_to_send = str(arm_num) + str(data) + '\n'
+        send_to_Arduino(data_to_send.encode())
+    except:
+        "Cannot send data to Arduino!!"

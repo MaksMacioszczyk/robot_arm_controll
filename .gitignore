@@ -127,3 +127,9 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+#Positions txt
+src/utils/positions.txt
+
+#Qt#
+src/utils/ui_form.py
