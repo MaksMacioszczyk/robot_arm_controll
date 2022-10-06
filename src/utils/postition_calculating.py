@@ -5,7 +5,6 @@ import numpy as np
 import math
 import os 
 import utils.communication as comm
-import time
 
 ##Camera init##
 camera = cv2.VideoCapture(0)
@@ -14,8 +13,8 @@ if not camera.isOpened():
 if not camera.isOpened():
     camera.open("http://192.168.0.25:8080")
 if not camera.isOpened():
-    raise "Please connect camera"
-
+    print("Please connect camera")
+    
 ##Get camera variables##
 camera_width = camera.get(cv2.CAP_PROP_FRAME_WIDTH)
 camera_height = camera.get(cv2.CAP_PROP_FRAME_HEIGHT)
@@ -30,6 +29,7 @@ positions_file = os.getcwd() + "/src/utils/positions.txt"
 last_pos = (0,0,0,0,0)
 counted_frame_to_send = 0
 how_many_messages_send = 5
+pos_round = 2
 
 ##Distance shenanigans##
 x = [300, 245, 200, 170, 145, 130, 112, 103, 93, 87, 80, 75, 70, 67, 62, 59, 57]
@@ -50,7 +50,6 @@ def loop():
             cv2.waitKey(1)
             ###############
         
-
 #Save current position to file#
 def save_postion(fi1,fi2,X,Y,Z):
     if X == 0 and Y == 0 and Z == 0:
@@ -116,7 +115,7 @@ def get_frame():
         elif fingers == [0,1,1,0,0]:
             if not is_gesture_position:
                 is_gesture_position = True
-                save_postion(last_pos[0],last_pos[1],last_pos[2],last_pos[3],last_pos[4])
+                save_postion(last_pos[0],last_pos[1],round(last_pos[2],pos_round),round(last_pos[3],pos_round),round(last_pos[4],pos_round))
         elif fingers == [0,0,1,0,0]:
             return False
         ##########################     

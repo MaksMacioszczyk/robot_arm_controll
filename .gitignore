@@ -129,7 +129,7 @@ dmypy.json
 .pyre/
 
 #Positions txt
-src/utils/positions.txt
+positions.txt
 
 #Qt#
-src/utils/ui_form.py
+ui_form.py

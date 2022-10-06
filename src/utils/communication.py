@@ -8,9 +8,12 @@ ser.timeout = 1
 try:
     ser.open()
 except:
-    ser.port = 'COM3'   #CHANGE HERE
-    ser.open()
-ser.write(b'off')
+    try:
+        ser.port = 'COM3'   #CHANGE HERE
+        ser.open()
+    except:
+        print("Cannot find Arduino")
+        pass
 
 def send_to_Arduino(data_to_send):
     ser.write(data_to_send)
