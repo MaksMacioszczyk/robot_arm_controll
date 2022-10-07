@@ -4,6 +4,7 @@ from PySide6.QtUiTools import *
 from PySide6.QtWidgets import *
 import sys, os
 import utils.postition_calculating as postition_calculating
+import utils.communication as comm
 
 #Main window class#
 class WindowApp:
@@ -34,6 +35,8 @@ class WindowApp:
         self.button_camera.clicked.connect(postition_calculating.loop) 
         self.button_add_to_path.clicked.connect(self.add_to_path)
         self.button_clear_path.clicked.connect(self.clear_path)
+        self.button_cycle_once.clicked.connect(self.cycle_once)
+        self.button_cycle_loop.clicked.connect(self.cycle_loop)
         ######################
         
         ##Adding items to postions list##
@@ -44,6 +47,14 @@ class WindowApp:
         
         ##Show window##
         self.show_window()
+
+    def cycle_once(self):
+        for positions in self.current_path:
+            comm.send_fi_to_Arduino(positions[0],1)
+            comm.send_fi_to_Arduino(positions[1],2)
+        
+    def cycle_loop(self):
+        pass
 
     def show_window(self):
         self.window.show()
