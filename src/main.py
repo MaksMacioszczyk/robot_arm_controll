@@ -23,6 +23,7 @@ class WindowApp:
     button_clear_path = window.button_clear_path
     button_cycle_once = window.button_cycle_once
     button_cycle_loop = window.button_cycle_loop
+    button_refresh = window.button_refresh
     label_positions = window.label_positions
     label_path = window.label_path
     combo_items = window.combo_items
@@ -39,6 +40,7 @@ class WindowApp:
         self.button_clear_path.clicked.connect(self.clear_path)
         self.button_cycle_once.clicked.connect(self.cycle_once)
         self.button_cycle_loop.clicked.connect(self.cycle_loop)
+        self.button_refresh.clicked.connect(self.refresh)
         ######################
         
         ##Adding items to postions list##
@@ -50,10 +52,15 @@ class WindowApp:
         ##Show window##
         self.show_window()
 
+    def refresh(self):
+        self.update_path_label()
+        self.add_items_to_label()
+        self.add_items_to_combo()
+    
     def cycle_once(self):
         for positions in self.current_path:
-            comm.send_fi_to_Arduino(positions[0],1)
-            comm.send_fi_to_Arduino(positions[1],2)
+            comm.send_fi_to_Arduino(positions[0],2)
+            comm.send_fi_to_Arduino(positions[1],3)
         
     def cycle_loop(self):
         pass
