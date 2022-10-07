@@ -61,7 +61,7 @@ border-width: 2px;
 border-color: black;</string>
     </property>
     <property name="text">
-     <string>TextLabel</string>
+     <string/>
     </property>
     <property name="alignment">
      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
@@ -82,7 +82,7 @@ border-color: black;</string>
      <rect>
       <x>280</x>
       <y>70</y>
-      <width>191</width>
+      <width>91</width>
       <height>23</height>
      </rect>
     </property>
@@ -105,10 +105,23 @@ border-width: 2px;
 border-color: black;</string>
     </property>
     <property name="text">
-     <string>TextLabel</string>
+     <string/>
     </property>
     <property name="alignment">
      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="button_clear_path">
+    <property name="geometry">
+     <rect>
+      <x>380</x>
+      <y>70</y>
+      <width>91</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Wyczyść</string>
     </property>
    </widget>
   </widget>
