@@ -2,7 +2,7 @@ from PySide6.QtCore import *
 from PySide6.QtGui import *
 from PySide6.QtUiTools import *
 from PySide6.QtWidgets import *
-import sys, os
+import sys, os, time
 import utils.postition_calculating as postition_calculating
 import utils.communication as comm
 
@@ -61,6 +61,7 @@ class WindowApp:
         for positions in self.current_path:
             comm.send_fi_to_Arduino(positions[0],2)
             comm.send_fi_to_Arduino(positions[1],3)
+            time.sleep(2)
         
     def cycle_loop(self):
         pass
