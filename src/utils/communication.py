@@ -20,9 +20,9 @@ def send_to_Arduino(data_to_send):
     
 def send_fi_to_Arduino(data, arm_num):
     try:
-        data = int(data)
-        if data > -90:
-            data = -90
+        data = int(data) + 90
+        if data < 0 :
+            data = 0
         data_to_send = str(arm_num) + str(data) + '\n'
         send_to_Arduino(data_to_send.encode())
     except:

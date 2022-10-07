@@ -36,7 +36,7 @@ void loop() {
       {
         incomingData.remove(0,1);
         toIntVal = incomingData.toInt();
-        servo_fi2.write(toIntVal + 90);
+        servo_fi2.write(toIntVal);
       }
   }
   delay(200);

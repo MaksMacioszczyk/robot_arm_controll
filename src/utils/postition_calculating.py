@@ -28,7 +28,7 @@ is_gesture_position = False
 positions_file = os.getcwd() + "/src/utils/positions.txt"
 last_pos = (0,0,0,0,0)
 counted_frame_to_send = 0
-how_many_messages_send = 5
+how_many_messages_send = 20
 pos_round = 2
 
 ##Distance shenanigans##
