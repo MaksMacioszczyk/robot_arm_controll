@@ -21,6 +21,8 @@ class WindowApp:
     button_camera = window.button_camera
     button_add_to_path = window.button_add_to_path
     button_clear_path = window.button_clear_path
+    button_cycle_once = window.button_cycle_once
+    button_cycle_loop = window.button_cycle_loop
     label_positions = window.label_positions
     label_path = window.label_path
     combo_items = window.combo_items
