@@ -115,7 +115,6 @@ def get_frame():
             #cvzone.putTextRect(img, f'{int(distanceCM)} cm X:{int(lmList[8][0])} Y:{int(camera_height - lmList[8][1])}', (x+5, y), border=3)
             cv2.circle(img, (lmList[8][0],lmList[8][1]), 10, (0,0,255),10)
             last_pos = calculate_kinematics(lmList, distanceCM)
-            print(counted_frame_to_send)
             if counted_frame_to_send == how_many_messages_send:
                 comm.send_fi_to_Arduino(last_pos[0], 2)
                 comm.send_fi_to_Arduino(last_pos[1], 3)
@@ -136,7 +135,7 @@ def get_frame():
 ##Calculating inverse kinematics##
 def calculate_kinematics(lmList,distanceCM):
         ##Counting robot X Y Z based on camera output##
-        robot_X = (lmList[8][0] - camera_width // 2)/camera_width * robot_max_range_CM[0]
+        robot_X = (lmList[8][0] - (camera_width // 2))/camera_width * robot_max_range_CM[0]
         robot_Y = (1 - lmList[8][1]/camera_height) * robot_max_range_CM[1]
         robot_Z = (1 - distanceCM/camera_suspension_height) * robot_max_range_CM[2]
         #################
@@ -155,7 +154,7 @@ def calculate_kinematics(lmList,distanceCM):
         fi2_deg = np.rad2deg(fi2)
         ###################
         
-        #print(f'FI1:{fi1_deg} FI2:{fi2_deg} Z:{robot_Z}\n') # Print angles #          
+        print(f'FI1:{fi1_deg} FI2:{fi2_deg} Z:{robot_Z}\n') # Print angles #          
         return (fi1_deg,fi2_deg,robot_X, robot_Y, robot_Z)
      
         

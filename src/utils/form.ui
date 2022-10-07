@@ -211,6 +211,22 @@ border-color: black;</string>
      <set>Qt::AlignHCenter|Qt::AlignTop</set>
     </property>
    </widget>
+   <widget class="QPushButton" name="button_refresh">
+    <property name="geometry">
+     <rect>
+      <x>440</x>
+      <y>320</y>
+      <width>81</width>
+      <height>91</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: rgb(175, 143, 255);</string>
+    </property>
+    <property name="text">
+     <string>Odświerz</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
