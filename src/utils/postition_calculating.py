@@ -66,7 +66,18 @@ def get_positions():
         for line in file:
             data.append(float(line))
     return data
- 
+
+#Returns given position#
+def get_position(pos):
+    with open(positions_file, "r") as file:
+        data = list()
+        for index, line in enumerate(file):
+            if index > (pos - 1) * 5 - 1:
+                data.append(float(line))
+                if index >= (pos - 1) * 5 + 5:
+                    break
+    return data
+
 #One frame#
 def get_frame():
     global is_gesture_grip, is_gesture_position, last_pos, counted_frame_to_send, how_many_messages_send
