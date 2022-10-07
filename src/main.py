@@ -48,11 +48,13 @@ class WindowApp:
     def show_window(self):
         self.window.show()
     
+    #After clicking button adds selected position to route#
     def add_to_path(self):
         curr_position = self.combo_items.currentText()
         self.current_path.append(curr_position)
         self.update_path_label()
     
+    #Clears whole saved route#
     def clear_path(self):
         self.current_path = list()
         self.update_path_label()
@@ -68,6 +70,7 @@ class WindowApp:
     def add_items_to_combo(self):
         self.combo_items.addItems(self.get_list_of_pos_numbers())
     
+    #Updates label with current route#
     def update_path_label(self):
         positions = postition_calculating.get_positions()
         self.current_path_positions = list()
