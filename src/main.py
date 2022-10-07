@@ -58,7 +58,7 @@ class WindowApp:
         self.add_items_to_combo()
     
     def cycle_once(self):
-        for positions in self.current_path:
+        for positions in self.current_path_positions:
             comm.send_fi_to_Arduino(positions[0],2)
             comm.send_fi_to_Arduino(positions[1],3)
             time.sleep(2)
@@ -78,6 +78,7 @@ class WindowApp:
     #Clears whole saved route#
     def clear_path(self):
         self.current_path = list()
+        self.current_path_positions = list()
         self.update_path_label()
     
     #Get list of num of positions eg. ['1', '2', ...] for comboBox#
