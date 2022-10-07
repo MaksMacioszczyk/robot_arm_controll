@@ -135,7 +135,7 @@ def get_frame():
 ##Calculating inverse kinematics##
 def calculate_kinematics(lmList,distanceCM):
         ##Counting robot X Y Z based on camera output##
-        robot_X = (lmList[8][0] - (camera_width // 2))/camera_width * robot_max_range_CM[0]
+        robot_X = (lmList[8][0])/camera_width * robot_max_range_CM[0]
         robot_Y = (1 - lmList[8][1]/camera_height) * robot_max_range_CM[1]
         robot_Z = (1 - distanceCM/camera_suspension_height) * robot_max_range_CM[2]
         #################
@@ -143,7 +143,8 @@ def calculate_kinematics(lmList,distanceCM):
         ##Inverse kinematics##
         try:
             M = (robot_X**2 + robot_Y**2 - robot_arm_lengths[0]**2 - robot_arm_lengths[1]**2)/(2*robot_arm_lengths[0]*robot_arm_lengths[1])
-            fi2 = np.arctan((-np.sqrt(1-M**2))/(M))
+            #fi2 = np.arctan((-np.sqrt(1-M**2))/(M))
+            fi2 = np.arccos(M)
             fi1 = np.arctan(robot_Y/robot_X)-np.arctan((robot_max_range_CM[1]*np.sin(fi2))/(robot_max_range_CM[0]+robot_max_range_CM[1] * np.cos(fi2)))
         except:
             print("Division by zero!!")    
