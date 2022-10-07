@@ -48,7 +48,7 @@ class WindowApp:
     def show_window(self):
         self.window.show()
     
-    #After clicking button adds selected position to route#
+    #After clicking button, func adds selected position to route#
     def add_to_path(self):
         curr_position = self.combo_items.currentText()
         self.current_path.append(curr_position)
