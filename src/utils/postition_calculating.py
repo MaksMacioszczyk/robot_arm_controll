@@ -21,8 +21,8 @@ camera_height = camera.get(cv2.CAP_PROP_FRAME_HEIGHT)
 camera_suspension_height = 50
 
 ##Variables##
-robot_max_range_CM = [10,10,10] # [X, Y, Z]
-robot_arm_lengths = [20,15,10] # [A1, A2, A3]
+robot_max_range_CM = [17.75,20.87,10] # [X, Y, Z]
+robot_arm_lengths = [11.37,6.5,10] # [A1, A2, A3]
 is_gesture_grip = False
 is_gesture_position = False
 positions_file = os.getcwd() + "/src/utils/positions.txt"
@@ -145,7 +145,7 @@ def calculate_kinematics(lmList,distanceCM):
             M = (robot_X**2 + robot_Y**2 - robot_arm_lengths[0]**2 - robot_arm_lengths[1]**2)/(2*robot_arm_lengths[0]*robot_arm_lengths[1])
             #fi2 = np.arctan((-np.sqrt(1-M**2))/(M))
             fi2 = np.arccos(M)
-            fi1 = np.arctan(robot_Y/robot_X)-np.arctan((robot_max_range_CM[1]*np.sin(fi2))/(robot_max_range_CM[0]+robot_max_range_CM[1] * np.cos(fi2)))
+            fi1 = np.arctan(robot_Y/robot_X)-np.arctan((robot_arm_lengths[1]*np.sin(fi2))/(robot_arm_lengths[0]+robot_arm_lengths[1] * np.cos(fi2)))
         except:
             print("Division by zero!!")    
             return
