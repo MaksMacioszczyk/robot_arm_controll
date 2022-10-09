@@ -23,7 +23,7 @@ def send_fi_to_Arduino(data, arm_num):
         if arm_num == 2:
             data = int(data)
         elif arm_num == 3:
-            data = int(data) + 90
+            data = int(data) - 90
         if data < 0 :
             data = 0
         data_to_send = str(arm_num) + str(data) + '\n'
