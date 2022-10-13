@@ -24,9 +24,16 @@ class WindowApp:
     button_cycle_once = window.button_cycle_once
     button_cycle_loop = window.button_cycle_loop
     button_refresh = window.button_refresh
+    button_set_pos = window.button_set_pos
+    button_set_angle = window.button_set_angle
     label_positions = window.label_positions
     label_path = window.label_path
     combo_items = window.combo_items
+    lineEdit_x = window.lineEdit_x
+    lineEdit_y = window.lineEdit_y
+    lineEdit_z = window.lineEdit_z
+    lineEdit_fi1 = window.lineEdit_fi1
+    lineEdit_fi2 = window.lineEdit_fi2
     ################    
     
     ##Variables##
@@ -41,6 +48,8 @@ class WindowApp:
         self.button_cycle_once.clicked.connect(self.cycle_once)
         self.button_cycle_loop.clicked.connect(self.cycle_loop)
         self.button_refresh.clicked.connect(self.refresh)
+        self.button_set_pos.clicked.connect(self.set_position)
+        self.button_set_angle.clicked.connect(self.set_angle)
         ######################
         
         ##Adding items to postions list##
@@ -52,6 +61,24 @@ class WindowApp:
         ##Show window##
         self.show_window()
 
+    def set_position(self):
+        given_pos_X = float(self.lineEdit_x.text())
+        given_pos_Y = float(self.lineEdit_y.text())
+        given_pos_Z = float(self.lineEdit_z.text())
+        
+        fis = postition_calculating.inverse_kinematics(given_pos_X,given_pos_Y)
+        
+        comm.send_fi_to_Arduino(given_pos_Z, 1)
+        comm.send_fi_to_Arduino(fis[0], 2)
+        comm.send_fi_to_Arduino(fis[1], 3)
+    
+    def set_angle(self):
+        givem_fi1 = float(self.lineEdit_fi1.text())
+        givem_fi2 = float(self.lineEdit_fi2.text())
+        
+        comm.send_fi_to_Arduino(givem_fi1, 2)
+        comm.send_fi_to_Arduino(givem_fi2, 3)
+    
     def refresh(self):
         self.update_path_label()
         self.add_items_to_label()

@@ -21,7 +21,7 @@ camera_height = camera.get(cv2.CAP_PROP_FRAME_HEIGHT)
 camera_suspension_height = 50
 
 ##Variables##
-robot_max_range_CM = [17.75,20.87,10] # [X, Y, Z]
+robot_max_range_CM = [17.75*2,20.87,10] # [X, Y, Z]
 robot_arm_lengths = [11.37,6.5,10] # [A1, A2, A3]
 is_gesture_grip = False
 is_gesture_position = False
@@ -116,6 +116,7 @@ def get_frame():
             cv2.circle(img, (lmList[8][0],lmList[8][1]), 10, (0,0,255),10)
             last_pos = calculate_kinematics(lmList, distanceCM)
             if counted_frame_to_send == how_many_messages_send:
+                comm.send_fi_to_Arduino(last_pos[4], 1)
                 comm.send_fi_to_Arduino(last_pos[0], 2)
                 comm.send_fi_to_Arduino(last_pos[1], 3)
                 counted_frame_to_send = 0
@@ -132,15 +133,8 @@ def get_frame():
     return img
 
 
-##Calculating inverse kinematics##
-def calculate_kinematics(lmList,distanceCM):
-        ##Counting robot X Y Z based on camera output##
-        robot_X = (lmList[8][0])/camera_width * robot_max_range_CM[0]
-        robot_Y = (1 - lmList[8][1]/camera_height) * robot_max_range_CM[1]
-        robot_Z = (1 - distanceCM/camera_suspension_height) * robot_max_range_CM[2]
-        #################
-
-        ##Inverse kinematics##
+def inverse_kinematics(robot_X,robot_Y):
+    ##Inverse kinematics##
         try:
             M = (robot_X**2 + robot_Y**2 - robot_arm_lengths[0]**2 - robot_arm_lengths[1]**2)/(2*robot_arm_lengths[0]*robot_arm_lengths[1])
             #fi2 = np.arctan((-np.sqrt(1-M**2))/(M))
@@ -154,8 +148,23 @@ def calculate_kinematics(lmList,distanceCM):
         fi1_deg = np.rad2deg(fi1)
         fi2_deg = np.rad2deg(fi2)
         ###################
+        return (fi1_deg,fi2_deg)
         
-        print(f'FI1:{fi1_deg} FI2:{fi2_deg} Z:{robot_Z}\n') # Print angles #          
+##Calculating inverse kinematics##
+def calculate_kinematics(lmList,distanceCM):
+        ##Counting robot X Y Z based on camera output##
+        #robot_X = ((lmList[8][0] - camera_width//2)/camera_width) * robot_max_range_CM[0]
+        robot_X = ((lmList[8][0])/camera_width) * robot_max_range_CM[0]
+        robot_Y = (1 - lmList[8][1]/camera_height) * robot_max_range_CM[1]
+        robot_Z = (1 - distanceCM/camera_suspension_height) * robot_max_range_CM[2]
+        #################
+
+        out_kinematics = inverse_kinematics(robot_X, robot_Y)
+        
+            
+        fi1_deg = out_kinematics[0]
+        fi2_deg = out_kinematics[1]
+        print(f'FI1:{fi1_deg} FI2:{fi2_deg} Z:{robot_Z}\n') # Print angles # 
         return (fi1_deg,fi2_deg,robot_X, robot_Y, robot_Z)
      
         
