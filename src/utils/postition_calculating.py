@@ -30,6 +30,7 @@ last_pos = (0,0,0,0,0)
 counted_frame_to_send = 0
 how_many_messages_send = 20
 pos_round = 2
+is_gripper_closed = False
 
 ##Distance shenanigans##
 x = [300, 245, 200, 170, 145, 130, 112, 103, 93, 87, 80, 75, 70, 67, 62, 59, 57]
@@ -109,8 +110,11 @@ def get_frame():
         elif fingers == [1,1,0,1,1]:
             cvzone.putTextRect(img, f'{int(distanceCM)} cm X:{int(lmList[8][0])} Y:{int(camera_height - lmList[8][1])}', (x+5, y-10), border=3)
             if not is_gesture_grip:
-                is_gesture_grip = True
-                
+                is_gesture_grip = True   
+                if is_gripper_closed:
+                     open_gripper()
+                else:
+                    close_gripper()
         elif fingers == [0,1,0,0,0]:
             #cvzone.putTextRect(img, f'{int(distanceCM)} cm X:{int(lmList[8][0])} Y:{int(camera_height - lmList[8][1])}', (x+5, y), border=3)
             cv2.circle(img, (lmList[8][0],lmList[8][1]), 10, (0,0,255),10)
@@ -167,4 +171,8 @@ def calculate_kinematics(lmList,distanceCM):
         print(f'FI1:{fi1_deg} FI2:{fi2_deg} Z:{robot_Z}\n') # Print angles # 
         return (fi1_deg,fi2_deg,robot_X, robot_Y, robot_Z)
      
-        
+def close_gripper():
+    comm.send_gripper_to_Arduino('C')
+
+def open_gripper():
+    comm.send_gripper_to_Arduino('O')    

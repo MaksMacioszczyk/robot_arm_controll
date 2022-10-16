@@ -23,6 +23,8 @@ class WindowApp:
     button_clear_path = window.button_clear_path
     button_cycle_once = window.button_cycle_once
     button_cycle_loop = window.button_cycle_loop
+    button_close_gripper = window.button_close_gripper
+    button_open_gripper = window.button_open_gripper
     button_refresh = window.button_refresh
     button_set_pos = window.button_set_pos
     button_set_angle = window.button_set_angle
@@ -50,6 +52,8 @@ class WindowApp:
         self.button_refresh.clicked.connect(self.refresh)
         self.button_set_pos.clicked.connect(self.set_position)
         self.button_set_angle.clicked.connect(self.set_angle)
+        self.button_open_gripper.clicked.connect(postition_calculating.open_gripper)
+        self.button_close_gripper.clicked.connect(postition_calculating.close_gripper)
         ######################
         
         ##Adding items to postions list##

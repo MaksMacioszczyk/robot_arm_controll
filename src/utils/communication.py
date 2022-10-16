@@ -31,3 +31,8 @@ def send_fi_to_Arduino(data, arm_num):
         send_to_Arduino(data_to_send.encode())
     except:
         "Cannot send data to Arduino!!"
+        
+def send_gripper_to_Arduino(gripper_state):
+    data_to_send = str(gripper_state) + '\n'
+    send_to_Arduino(data_to_send.encod())
+    
