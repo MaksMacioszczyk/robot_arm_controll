@@ -90,6 +90,7 @@ class WindowApp:
     
     def cycle_once(self):
         for positions in self.current_path_positions:
+            comm.send_fi_to_Arduino(positions[4],1)
             comm.send_fi_to_Arduino(positions[0],2)
             comm.send_fi_to_Arduino(positions[1],3)
             time.sleep(2)
@@ -121,6 +122,7 @@ class WindowApp:
     
     #Append to comboBox#
     def add_items_to_combo(self):
+        self.combo_items.addItems(list())
         self.combo_items.addItems(self.get_list_of_pos_numbers())
     
     #Updates label with current route#

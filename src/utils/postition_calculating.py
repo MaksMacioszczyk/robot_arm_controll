@@ -13,15 +13,17 @@ if not camera.isOpened():
 if not camera.isOpened():
     camera.open("http://192.168.0.25:8080")
 if not camera.isOpened():
+    camera.open("http://192.168.43.162:8080")
+if not camera.isOpened():
     print("Please connect camera")
     
 ##Get camera variables##
 camera_width = camera.get(cv2.CAP_PROP_FRAME_WIDTH)
 camera_height = camera.get(cv2.CAP_PROP_FRAME_HEIGHT)
-camera_suspension_height = 50
+camera_suspension_height = 100
 
 ##Variables##
-robot_max_range_CM = [17.75*2,20.87,10] # [X, Y, Z]
+robot_max_range_CM = [17,17,15.5] # [X, Y, Z]
 robot_arm_lengths = [11.37,6.5,10] # [A1, A2, A3]
 is_gesture_grip = False
 is_gesture_position = False
@@ -31,6 +33,7 @@ counted_frame_to_send = 0
 how_many_messages_send = 20
 pos_round = 2
 is_gripper_closed = False
+stepper_motor_max_step = 4000
 
 ##Distance shenanigans##
 x = [300, 245, 200, 170, 145, 130, 112, 103, 93, 87, 80, 75, 70, 67, 62, 59, 57]
@@ -81,7 +84,7 @@ def get_position(pos):
 
 #One frame#
 def get_frame():
-    global is_gesture_grip, is_gesture_position, last_pos, counted_frame_to_send, how_many_messages_send
+    global is_gesture_grip, is_gesture_position, last_pos, counted_frame_to_send, how_many_messages_send, is_gripper_closed
     _, img = camera.read()
     hands = detector.findHands(img, draw=False)  
 
@@ -112,8 +115,10 @@ def get_frame():
             if not is_gesture_grip:
                 is_gesture_grip = True   
                 if is_gripper_closed:
-                     open_gripper()
+                    is_gripper_closed = False
+                    open_gripper()
                 else:
+                    is_gripper_closed = True
                     close_gripper()
         elif fingers == [0,1,0,0,0]:
             #cvzone.putTextRect(img, f'{int(distanceCM)} cm X:{int(lmList[8][0])} Y:{int(camera_height - lmList[8][1])}', (x+5, y), border=3)
@@ -161,6 +166,9 @@ def calculate_kinematics(lmList,distanceCM):
         robot_X = ((lmList[8][0])/camera_width) * robot_max_range_CM[0]
         robot_Y = (1 - lmList[8][1]/camera_height) * robot_max_range_CM[1]
         robot_Z = (1 - distanceCM/camera_suspension_height) * robot_max_range_CM[2]
+        
+        #Convert cm to steps for stepper motor
+        robot_Z = robot_Z / robot_max_range_CM[2] * stepper_motor_max_step
         #################
 
         out_kinematics = inverse_kinematics(robot_X, robot_Y)
