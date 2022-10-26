@@ -136,7 +136,7 @@ def get_frame():
             if not is_gesture_position:
                 is_gesture_position = True
                 save_postion(last_pos[0],last_pos[1],round(last_pos[2],pos_round),round(last_pos[3],pos_round),round(last_pos[4],pos_round))
-        elif fingers == [0,0,1,0,0]:
+        elif fingers == [0,0,0,1,1]:
             return False
         ##########################     
     return img
